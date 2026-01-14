@@ -156,7 +156,7 @@ describe('appSettings Integration', () => {
       // Assert
       expect(result).toEqual({
         provider: 'anthropic',
-        model: 'anthropic/claude-haiku-4-5',
+        model: 'anthropic/claude-opus-4-5',
       });
     });
 
@@ -207,7 +207,7 @@ describe('appSettings Integration', () => {
         onboardingComplete: false,
         selectedModel: {
           provider: 'anthropic',
-          model: 'anthropic/claude-haiku-4-5',
+          model: 'anthropic/claude-opus-4-5',
         },
       });
     });
@@ -246,7 +246,7 @@ describe('appSettings Integration', () => {
       expect(result.onboardingComplete).toBe(false);
       expect(result.selectedModel).toEqual({
         provider: 'anthropic',
-        model: 'anthropic/claude-haiku-4-5',
+        model: 'anthropic/claude-opus-4-5',
       });
     });
   });
@@ -277,7 +277,7 @@ describe('appSettings Integration', () => {
         onboardingComplete: false,
         selectedModel: {
           provider: 'anthropic',
-          model: 'anthropic/claude-haiku-4-5',
+          model: 'anthropic/claude-opus-4-5',
         },
       });
     });
@@ -323,7 +323,7 @@ describe('appSettings Integration', () => {
       // Assert
       expect(result).toEqual({
         provider: 'anthropic',
-        model: 'anthropic/claude-haiku-4-5',
+        model: 'anthropic/claude-opus-4-5',
       });
     });
 

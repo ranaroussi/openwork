@@ -498,10 +498,10 @@ export default function ExecutionPage() {
                   <SpinningIcon className="h-4 w-4" />
                   <span className="text-sm">
                     {currentTool
-                      ? (TOOL_PROGRESS_MAP[currentTool]?.label || currentTool)
+                      ? ((currentToolInput as { description?: string })?.description || TOOL_PROGRESS_MAP[currentTool]?.label || currentTool)
                       : 'Thinking...'}
                   </span>
-                  {currentTool && (
+                  {currentTool && !(currentToolInput as { description?: string })?.description && (
                     <span className="text-xs text-muted-foreground/60">
                       ({currentTool})
                     </span>

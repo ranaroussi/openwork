@@ -71,18 +71,18 @@ export const DEFAULT_PROVIDERS: ProviderConfig[] = [
     apiKeyEnvVar: 'OPENAI_API_KEY',
     models: [
       {
-        id: 'gpt-5.2',
-        displayName: 'GPT 5.2',
+        id: 'gpt-5.2-pro',
+        displayName: 'GPT 5.2 Pro',
         provider: 'openai',
-        fullId: 'openai/gpt-5.2',
+        fullId: 'openai/gpt-5.2-pro',
         contextWindow: 1000000,
         supportsVision: true,
       },
       {
-        id: 'gpt-5.1-codex',
-        displayName: 'GPT 5.1 Codex',
+        id: 'gpt-5.1-codex-max',
+        displayName: 'GPT 5.1 Codex Max',
         provider: 'openai',
-        fullId: 'openai/gpt-5.1-codex',
+        fullId: 'openai/gpt-5.1-codex-max',
         contextWindow: 1000000,
         supportsVision: true,
       },
@@ -130,5 +130,5 @@ export const DEFAULT_PROVIDERS: ProviderConfig[] = [
 
 export const DEFAULT_MODEL: SelectedModel = {
   provider: 'anthropic',
-  model: 'anthropic/claude-haiku-4-5',
+  model: 'anthropic/claude-opus-4-5',
 };

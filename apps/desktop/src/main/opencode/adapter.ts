@@ -345,6 +345,8 @@ export class OpenCodeAdapter extends EventEmitter<OpenCodeAdapterEvents> {
         // Prepend bundled Node.js bin directory to PATH
         const delimiter = process.platform === 'win32' ? ';' : ':';
         env.PATH = `${bundledNode.binDir}${delimiter}${env.PATH || ''}`;
+        // Also expose as NODE_BIN_PATH so agent can use it in bash commands
+        env.NODE_BIN_PATH = bundledNode.binDir;
         console.log('[OpenCode CLI] Added bundled Node.js to PATH:', bundledNode.binDir);
       }
 
@@ -368,7 +370,7 @@ export class OpenCodeAdapter extends EventEmitter<OpenCodeAdapterEvents> {
       console.log('[OpenCode CLI] Using OpenAI API key from settings');
     }
     if (apiKeys.google) {
-      env.GOOGLE_API_KEY = apiKeys.google;
+      env.GOOGLE_GENERATIVE_AI_API_KEY = apiKeys.google;
       console.log('[OpenCode CLI] Using Google API key from settings');
     }
     if (apiKeys.groq) {
@@ -484,13 +486,33 @@ export class OpenCodeAdapter extends EventEmitter<OpenCodeAdapterEvents> {
 
       // Tool use event - combined tool call and result from OpenCode CLI
       case 'tool_use':
-        // Forward to handlers.ts for message processing (screenshots, etc.)
-        this.emit('message', message);
-
         const toolUseMessage = message as import('@accomplish/shared').OpenCodeToolUseMessage;
         const toolUseName = toolUseMessage.part.tool || 'unknown';
         const toolUseInput = toolUseMessage.part.state?.input;
         const toolUseOutput = toolUseMessage.part.state?.output || '';
+
+        // For models that don't emit text messages (like Gemini), emit the tool description
+        // as a thinking message so users can see what the AI is doing
+        const toolDescription = (toolUseInput as { description?: string })?.description;
+        if (toolDescription) {
+          // Create a synthetic text message for the description
+          const syntheticTextMessage: OpenCodeMessage = {
+            type: 'text',
+            timestamp: message.timestamp,
+            sessionID: message.sessionID,
+            part: {
+              id: this.generateMessageId(),
+              sessionID: toolUseMessage.part.sessionID,
+              messageID: toolUseMessage.part.messageID,
+              type: 'text',
+              text: toolDescription,
+            },
+          } as import('@accomplish/shared').OpenCodeTextMessage;
+          this.emit('message', syntheticTextMessage);
+        }
+
+        // Forward to handlers.ts for message processing (screenshots, etc.)
+        this.emit('message', message);
         const toolUseStatus = toolUseMessage.part.state?.status;
 
         console.log('[OpenCode Adapter] Tool use:', toolUseName, 'status:', toolUseStatus);

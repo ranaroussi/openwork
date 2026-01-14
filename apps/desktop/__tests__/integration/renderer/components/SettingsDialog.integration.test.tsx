@@ -96,7 +96,7 @@ describe('SettingsDialog Integration', () => {
     mockGetApiKeys.mockResolvedValue([]);
     mockGetDebugMode.mockResolvedValue(false);
     mockGetVersion.mockResolvedValue('1.0.0');
-    mockGetSelectedModel.mockResolvedValue({ provider: 'anthropic', model: 'anthropic/claude-haiku-4-5' });
+    mockGetSelectedModel.mockResolvedValue({ provider: 'anthropic', model: 'anthropic/claude-opus-4-5' });
     mockSetDebugMode.mockResolvedValue(undefined);
     mockSetSelectedModel.mockResolvedValue(undefined);
     mockValidateApiKeyForProvider.mockResolvedValue({ valid: true });
@@ -210,13 +210,13 @@ describe('SettingsDialog Integration', () => {
 
       // Act
       await waitFor(() => {
-        expect(screen.getByText('OpenAI')).toBeInTheDocument();
+        expect(screen.getByText('Google AI')).toBeInTheDocument();
       });
-      fireEvent.click(screen.getByText('OpenAI'));
+      fireEvent.click(screen.getByText('Google AI'));
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('sk-...')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('AIza...')).toBeInTheDocument();
       });
     });
 
@@ -487,7 +487,7 @@ describe('SettingsDialog Integration', () => {
     });
 
     it('should disable models without API keys', async () => {
-      // Arrange - No OpenAI API key
+      // Arrange - No Google AI API key
       const savedKeys: ApiKeyConfig[] = [
         { id: 'key-1', provider: 'anthropic', keyPrefix: 'sk-ant-...' },
       ];
@@ -496,7 +496,7 @@ describe('SettingsDialog Integration', () => {
 
       // Assert
       await waitFor(() => {
-        const option = screen.getByRole('option', { name: /GPT 5\.2 \(No API key\)/i });
+        const option = screen.getByRole('option', { name: /gemini 3 pro \(no api key\)/i });
         expect(option).toBeDisabled();
       });
     });
@@ -545,8 +545,8 @@ describe('SettingsDialog Integration', () => {
     });
 
     it('should show warning when selected model has no API key', async () => {
-      // Arrange - Selected OpenAI model but no OpenAI key
-      mockGetSelectedModel.mockResolvedValue({ provider: 'openai', model: 'openai/gpt-5.2' });
+      // Arrange - Selected Google AI model but no Google AI key
+      mockGetSelectedModel.mockResolvedValue({ provider: 'google', model: 'google/gemini-3-pro-preview' });
       mockGetApiKeys.mockResolvedValue([
         { id: 'key-1', provider: 'anthropic', keyPrefix: 'sk-ant-...' },
       ]);
@@ -554,7 +554,7 @@ describe('SettingsDialog Integration', () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByText(/no api key configured for openai/i)).toBeInTheDocument();
+        expect(screen.getByText(/no api key configured for google/i)).toBeInTheDocument();
       });
     });
   });

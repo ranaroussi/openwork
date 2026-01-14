@@ -12,11 +12,10 @@ import HomePage from './pages/Home';
 import ExecutionPage from './pages/Execution';
 
 // Components
-import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import Sidebar from './components/layout/Sidebar';
 import { Loader2, AlertTriangle } from 'lucide-react';
 
-type AppStatus = 'loading' | 'ready' | 'needs_setup' | 'error';
+type AppStatus = 'loading' | 'ready' | 'error';
 
 export default function App() {
   const [status, setStatus] = useState<AppStatus>('loading');
@@ -39,34 +38,18 @@ export default function App() {
 
       try {
         const accomplish = getAccomplish();
-
-        // Check if onboarding has been completed
-        const onboardingComplete = await accomplish.getOnboardingComplete();
-
-        if (!onboardingComplete) {
-          setStatus('needs_setup');
-          return;
-        }
-
+        // Mark onboarding as complete (no welcome screen needed)
+        await accomplish.setOnboardingComplete(true);
         setStatus('ready');
       } catch (error) {
-        console.error('Failed to check app status:', error);
-        setStatus('needs_setup');
+        console.error('Failed to initialize app:', error);
+        // Still allow app to run even if setting fails
+        setStatus('ready');
       }
     };
 
     checkStatus();
   }, []);
-
-  const handleOnboardingComplete = async () => {
-    try {
-      const accomplish = getAccomplish();
-      await accomplish.setOnboardingComplete(true);
-      setStatus('ready');
-    } catch (error) {
-      console.error('Failed to complete onboarding:', error);
-    }
-  };
 
   // Loading state
   if (status === 'loading') {
@@ -92,11 +75,6 @@ export default function App() {
         </div>
       </div>
     );
-  }
-
-  // Needs setup - show onboarding wizard
-  if (status === 'needs_setup') {
-    return <OnboardingWizard onComplete={handleOnboardingComplete} />;
   }
 
   // Ready - render the app with sidebar

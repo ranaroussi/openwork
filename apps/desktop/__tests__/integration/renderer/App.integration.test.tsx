@@ -1,6 +1,6 @@
 /**
  * Integration tests for App component
- * Tests router setup, route rendering, and onboarding gate logic
+ * Tests router setup and route rendering
  *
  * NOTE: This test follows React component integration testing principles:
  * - Mocks external boundaries (IPC API, analytics) - cannot run real Electron in vitest
@@ -19,7 +19,6 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Create mock functions for accomplish API
-const mockGetOnboardingComplete = vi.fn();
 const mockSetOnboardingComplete = vi.fn();
 const mockLogEvent = vi.fn();
 const mockListTasks = vi.fn();
@@ -29,7 +28,6 @@ const mockGetTask = vi.fn();
 
 // Mock accomplish API
 const mockAccomplish = {
-  getOnboardingComplete: mockGetOnboardingComplete,
   setOnboardingComplete: mockSetOnboardingComplete,
   logEvent: mockLogEvent.mockResolvedValue(undefined),
   listTasks: mockListTasks.mockResolvedValue([]),
@@ -107,16 +105,6 @@ vi.mock('@/stores/taskStore', () => ({
   useTaskStore: () => mockStoreState,
 }));
 
-// Mock the OnboardingWizard component
-vi.mock('@/components/onboarding/OnboardingWizard', () => ({
-  default: ({ onComplete }: { onComplete: () => void }) => (
-    <div data-testid="onboarding-wizard">
-      <h1>Welcome to Openwork</h1>
-      <button onClick={onComplete}>Get Started</button>
-    </div>
-  ),
-}));
-
 // Mock the Sidebar component
 vi.mock('@/components/layout/Sidebar', () => ({
   default: () => <div data-testid="sidebar">Sidebar</div>,
@@ -149,8 +137,6 @@ describe('App Integration', () => {
       updateTaskStatus: vi.fn(),
       addTaskUpdate: vi.fn(),
     };
-    // Default: onboarding complete
-    mockGetOnboardingComplete.mockResolvedValue(true);
     mockSetOnboardingComplete.mockResolvedValue(undefined);
   });
 
@@ -162,86 +148,6 @@ describe('App Integration', () => {
       </MemoryRouter>
     );
   };
-
-  describe('onboarding gate', () => {
-    it('should show onboarding wizard when not completed', async () => {
-      // Arrange
-      mockGetOnboardingComplete.mockResolvedValue(false);
-
-      // Act
-      renderApp();
-
-      // Assert
-      await waitFor(() => {
-        expect(screen.getByTestId('onboarding-wizard')).toBeInTheDocument();
-      });
-    });
-
-    it('should not show main app when onboarding not completed', async () => {
-      // Arrange
-      mockGetOnboardingComplete.mockResolvedValue(false);
-
-      // Act
-      renderApp();
-
-      // Assert
-      await waitFor(() => {
-        expect(screen.getByTestId('onboarding-wizard')).toBeInTheDocument();
-      });
-      expect(screen.queryByTestId('sidebar')).not.toBeInTheDocument();
-    });
-
-    it('should complete onboarding when Get Started is clicked', async () => {
-      // Arrange
-      mockGetOnboardingComplete.mockResolvedValue(false);
-
-      // Act
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('onboarding-wizard')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByRole('button', { name: /get started/i }));
-
-      // Assert
-      await waitFor(() => {
-        expect(mockSetOnboardingComplete).toHaveBeenCalledWith(true);
-      });
-    });
-
-    it('should show main app after onboarding completion', async () => {
-      // Arrange
-      mockGetOnboardingComplete.mockResolvedValue(false);
-
-      // Act
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('onboarding-wizard')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByRole('button', { name: /get started/i }));
-
-      // Assert
-      await waitFor(() => {
-        expect(screen.getByTestId('sidebar')).toBeInTheDocument();
-      });
-    });
-
-    it('should fall back to needs_setup on API error', async () => {
-      // Arrange
-      mockGetOnboardingComplete.mockRejectedValue(new Error('API error'));
-
-      // Act
-      renderApp();
-
-      // Assert
-      await waitFor(() => {
-        expect(screen.getByTestId('onboarding-wizard')).toBeInTheDocument();
-      });
-    });
-  });
 
   describe('router setup', () => {
     it('should render sidebar in ready state', async () => {
@@ -422,38 +328,6 @@ describe('App Integration', () => {
       // Assert
       await waitFor(() => {
         expect(analytics.trackPageView).toHaveBeenCalledWith('/execution/task-123');
-      });
-    });
-  });
-
-  describe('state management', () => {
-    it('should check onboarding status on mount', async () => {
-      // Arrange & Act
-      renderApp();
-
-      // Assert
-      await waitFor(() => {
-        expect(mockGetOnboardingComplete).toHaveBeenCalled();
-      });
-    });
-
-    it('should handle onboarding completion error gracefully', async () => {
-      // Arrange
-      mockGetOnboardingComplete.mockResolvedValue(false);
-      mockSetOnboardingComplete.mockRejectedValue(new Error('Save failed'));
-
-      // Act
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('onboarding-wizard')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByRole('button', { name: /get started/i }));
-
-      // Assert - Should attempt to save and handle error
-      await waitFor(() => {
-        expect(mockSetOnboardingComplete).toHaveBeenCalled();
       });
     });
   });
