@@ -210,4 +210,140 @@ test.describe('Settings Dialog', () => {
       ]
     );
   });
+
+  test('should display DeepSeek as a provider option', async ({ window }) => {
+    const settingsPage = new SettingsPage(window);
+
+    // Navigate to settings
+    await window.waitForLoadState('domcontentloaded');
+    await settingsPage.navigateToSettings();
+
+    // Verify DeepSeek provider button is visible
+    const deepseekButton = settingsPage.getProviderButton('DeepSeek');
+    await expect(deepseekButton).toBeVisible({ timeout: TEST_TIMEOUTS.NAVIGATION });
+
+    // Capture provider selection area
+    await captureForAI(
+      window,
+      'settings-dialog',
+      'deepseek-provider-visible',
+      [
+        'DeepSeek provider is visible in settings',
+        'Provider button can be clicked',
+        'User can select DeepSeek as their provider'
+      ]
+    );
+  });
+
+  test('should allow selecting DeepSeek provider and entering API key', async ({ window }) => {
+    const settingsPage = new SettingsPage(window);
+
+    // Navigate to settings
+    await window.waitForLoadState('domcontentloaded');
+    await settingsPage.navigateToSettings();
+
+    // Click DeepSeek provider
+    await settingsPage.selectProvider('DeepSeek');
+
+    // Enter API key
+    const testKey = 'sk-deepseek-test-key-12345';
+    await settingsPage.apiKeyInput.fill(testKey);
+
+    // Verify value was entered
+    await expect(settingsPage.apiKeyInput).toHaveValue(testKey);
+
+    // Capture filled state
+    await captureForAI(
+      window,
+      'settings-dialog',
+      'deepseek-api-key-filled',
+      [
+        'DeepSeek provider is selected',
+        'API key input accepts DeepSeek key format',
+        'Value is correctly displayed'
+      ]
+    );
+  });
+
+  test('should display Z.AI Coding Plan as a provider option', async ({ window }) => {
+    const settingsPage = new SettingsPage(window);
+
+    // Navigate to settings
+    await window.waitForLoadState('domcontentloaded');
+    await settingsPage.navigateToSettings();
+
+    // Verify Z.AI provider button is visible
+    const zaiButton = settingsPage.getProviderButton('Z.AI Coding Plan');
+    await expect(zaiButton).toBeVisible({ timeout: TEST_TIMEOUTS.NAVIGATION });
+
+    // Capture provider selection area
+    await captureForAI(
+      window,
+      'settings-dialog',
+      'zai-provider-visible',
+      [
+        'Z.AI Coding Plan provider is visible in settings',
+        'Provider button can be clicked',
+        'User can select Z.AI as their provider'
+      ]
+    );
+  });
+
+  test('should allow selecting Z.AI Coding Plan provider and entering API key', async ({ window }) => {
+    const settingsPage = new SettingsPage(window);
+
+    // Navigate to settings
+    await window.waitForLoadState('domcontentloaded');
+    await settingsPage.navigateToSettings();
+
+    // Click Z.AI provider
+    await settingsPage.selectProvider('Z.AI Coding Plan');
+
+    // Enter API key
+    const testKey = 'zai-test-api-key-67890';
+    await settingsPage.apiKeyInput.fill(testKey);
+
+    // Verify value was entered
+    await expect(settingsPage.apiKeyInput).toHaveValue(testKey);
+
+    // Capture filled state
+    await captureForAI(
+      window,
+      'settings-dialog',
+      'zai-api-key-filled',
+      [
+        'Z.AI Coding Plan provider is selected',
+        'API key input accepts Z.AI key format',
+        'Value is correctly displayed'
+      ]
+    );
+  });
+
+  test('should display all six cloud providers', async ({ window }) => {
+    const settingsPage = new SettingsPage(window);
+
+    // Navigate to settings
+    await window.waitForLoadState('domcontentloaded');
+    await settingsPage.navigateToSettings();
+
+    // Verify all providers are visible
+    const providers = ['Anthropic', 'OpenAI', 'Google AI', 'xAI (Grok)', 'DeepSeek', 'Z.AI Coding Plan'];
+
+    for (const provider of providers) {
+      const button = settingsPage.getProviderButton(provider);
+      await expect(button).toBeVisible({ timeout: TEST_TIMEOUTS.NAVIGATION });
+    }
+
+    // Capture all providers
+    await captureForAI(
+      window,
+      'settings-dialog',
+      'all-providers-visible',
+      [
+        'All six cloud providers are visible',
+        'Anthropic, OpenAI, Google AI, xAI, DeepSeek, Z.AI all present',
+        'User can select any provider'
+      ]
+    );
+  });
 });

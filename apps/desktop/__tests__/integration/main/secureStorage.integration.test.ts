@@ -242,6 +242,8 @@ describe('secureStorage Integration', () => {
         openai: null,
         google: null,
         xai: null,
+        deepseek: null,
+        zai: null,
         custom: null,
       });
     });
@@ -349,6 +351,8 @@ describe('secureStorage Integration', () => {
         openai: null,
         google: null,
         xai: null,
+        deepseek: null,
+        zai: null,
         custom: null,
       });
     });

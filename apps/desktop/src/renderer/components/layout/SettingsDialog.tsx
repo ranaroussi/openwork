@@ -173,7 +173,8 @@ export default function SettingsDialog({ open, onOpenChange, onApiKeySaved }: Se
       return;
     }
 
-    if (!trimmedKey.startsWith(currentProvider.prefix)) {
+    // Only validate prefix if the provider has a defined prefix
+    if (currentProvider.prefix && !trimmedKey.startsWith(currentProvider.prefix)) {
       setError(`Invalid API key format. Key should start with ${currentProvider.prefix}`);
       return;
     }

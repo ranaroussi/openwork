@@ -380,6 +380,14 @@ export class OpenCodeAdapter extends EventEmitter<OpenCodeAdapterEvents> {
       env.XAI_API_KEY = apiKeys.xai;
       console.log('[OpenCode CLI] Using xAI API key from settings');
     }
+    if (apiKeys.deepseek) {
+      env.DEEPSEEK_API_KEY = apiKeys.deepseek;
+      console.log('[OpenCode CLI] Using DeepSeek API key from settings');
+    }
+    if (apiKeys.zai) {
+      env.ZAI_API_KEY = apiKeys.zai;
+      console.log('[OpenCode CLI] Using Z.AI API key from settings');
+    }
 
     // Set Ollama host if configured
     const selectedModel = getSelectedModel();

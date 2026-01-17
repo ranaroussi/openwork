@@ -179,7 +179,7 @@ export const DEFAULT_PROVIDERS: ProviderConfig[] = [
     name: 'Z.AI Coding Plan',
     requiresApiKey: true,
     apiKeyEnvVar: 'ZAI_API_KEY',
-    baseUrl: 'https://api.z.ai',
+    baseUrl: 'https://open.bigmodel.cn',
     models: [
       {
         id: 'glm-4.7',
